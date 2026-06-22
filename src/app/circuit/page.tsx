@@ -10,16 +10,20 @@ export const metadata = {
 
 export default async function CircuitPage() {
   let email: string | null = null;
+  let name: string | null = null;
+  let image: string | null = null;
   try {
     const session = await auth();
     email = session?.user?.email ?? null;
+    name = session?.user?.name ?? null;
+    image = session?.user?.image ?? null;
   } catch {
     // auth not yet configured
   }
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      <Header email={email} />
+      <Header email={email} name={name} image={image} />
       <main style={{ flex: 1, maxWidth: "900px", margin: "0 auto", padding: "2rem 1.5rem", width: "100%", boxSizing: "border-box" }}>
         <h1
           style={{

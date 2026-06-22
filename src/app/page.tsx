@@ -3,19 +3,24 @@ import { auth } from "@/auth";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Logo } from "@/components/Logo";
+import { Wordmark } from "@/components/Wordmark";
 
 export default async function HomePage() {
   let email: string | null = null;
+  let name: string | null = null;
+  let image: string | null = null;
   try {
     const session = await auth();
     email = session?.user?.email ?? null;
+    name = session?.user?.name ?? null;
+    image = session?.user?.image ?? null;
   } catch {
     // auth not yet configured
   }
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      <Header email={email} />
+      <Header email={email} name={name} image={image} />
       <main
         style={{
           flex: 1,
@@ -39,7 +44,7 @@ export default async function HomePage() {
             marginBottom: "0.5rem",
           }}
         >
-          QU|00&#x27E9;B
+          <Wordmark />
         </h1>
         <p
           style={{
@@ -50,8 +55,8 @@ export default async function HomePage() {
             maxWidth: "480px",
           }}
         >
-          Meet your first qubit. A quantum circuit simulator that runs entirely
-          in your browser — powered by Rust and WebAssembly.
+          Build a circuit and watch quantum get weird. Runs entirely in your
+          browser — powered by Rust and WebAssembly, no server involved.
         </p>
         <Link
           href="/circuit"
@@ -67,7 +72,19 @@ export default async function HomePage() {
             textDecoration: "none",
           }}
         >
-          Open simulator →
+          Let&rsquo;s go
+        </Link>
+        <Link
+          href="/about"
+          style={{
+            marginTop: "1rem",
+            fontFamily: "var(--font-jakarta)",
+            fontSize: "0.8rem",
+            color: "#9CA3AF",
+            textDecoration: "none",
+          }}
+        >
+          what is this?
         </Link>
       </main>
       <Footer />

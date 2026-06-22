@@ -10,16 +10,20 @@ export const metadata = {
 
 export default async function SupportPage() {
   let email: string | null = null;
+  let name: string | null = null;
+  let image: string | null = null;
   try {
     const session = await auth();
     email = session?.user?.email ?? null;
+    name = session?.user?.name ?? null;
+    image = session?.user?.image ?? null;
   } catch {
     // anonymous mode
   }
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      <Header email={email} />
+      <Header email={email} name={name} image={image} />
       <main style={{ flex: 1, maxWidth: "560px", margin: "0 auto", padding: "3rem 1.5rem", width: "100%", boxSizing: "border-box" }}>
         <h1
           style={{

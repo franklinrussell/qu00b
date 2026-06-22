@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "./Logo";
+import { Wordmark } from "./Wordmark";
 
 export function Footer() {
   return (
@@ -34,7 +35,7 @@ export function Footer() {
             lineHeight: 1,
           }}
         >
-          QU|00&#x27E9;B
+          <Wordmark />
         </span>
         <span
           style={{
@@ -49,10 +50,11 @@ export function Footer() {
 
       <nav style={{ display: "flex", gap: "1.25rem", alignItems: "center" }}>
         {[
+          { label: "About", href: "/about" },
           { label: "Privacy", href: "/privacy" },
           { label: "Terms", href: "/terms" },
           { label: "Support", href: "/support" },
-          { label: "Source ↗", href: "https://github.com/franklinrussell/qu00b" },
+          { label: "Source", href: "https://github.com/franklinrussell/qu00b" },
         ].map(({ label, href }) => (
           <Link
             key={href}

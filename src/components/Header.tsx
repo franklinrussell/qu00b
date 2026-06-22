@@ -4,10 +4,17 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { Logo } from "./Logo";
+import { Wordmark } from "./Wordmark";
 
 const ACCENT = "#14B8A6";
 
-export function Header({ email }: { email: string | null }) {
+interface HeaderProps {
+  email: string | null;
+  name?: string | null;
+  image?: string | null;
+}
+
+export function Header({ email, name, image }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -21,7 +28,8 @@ export function Header({ email }: { email: string | null }) {
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [open]);
 
-  const initial = email?.[0]?.toUpperCase() ?? "?";
+  const displayLabel = name ?? email?.[0]?.toUpperCase() ?? "?";
+  const isSignedIn = !!email || !!name;
 
   return (
     <header
@@ -58,11 +66,11 @@ export function Header({ email }: { email: string | null }) {
             lineHeight: 1,
           }}
         >
-          QU|00&#x27E9;B
+          <Wordmark />
         </span>
       </Link>
 
-      {email ? (
+      {isSignedIn ? (
         <div style={{ position: "relative" }} ref={dropdownRef}>
           <button
             onClick={() => setOpen((o) => !o)}
@@ -71,7 +79,7 @@ export function Header({ email }: { email: string | null }) {
               width: "32px",
               height: "32px",
               borderRadius: "50%",
-              background: ACCENT,
+              background: image ? "transparent" : ACCENT,
               color: "#fff",
               border: "none",
               cursor: "pointer",
@@ -81,9 +89,22 @@ export function Header({ email }: { email: string | null }) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              padding: 0,
+              overflow: "hidden",
             }}
           >
-            {initial}
+            {image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={image}
+                alt={displayLabel}
+                width={32}
+                height={32}
+                style={{ borderRadius: "50%", display: "block" }}
+              />
+            ) : (
+              displayLabel[0]?.toUpperCase()
+            )}
           </button>
 
           {open && (
@@ -112,7 +133,7 @@ export function Header({ email }: { email: string | null }) {
                   userSelect: "none",
                 }}
               >
-                {email}
+                {name ? `@${name}` : email}
               </div>
               <div style={{ height: "1px", background: "#F0F0F0", margin: "4px 0" }} />
               <button
