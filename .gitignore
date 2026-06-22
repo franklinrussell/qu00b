@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Rust build artifacts
+target/
+pkg/
+
+# wasm-pack output: NOT ignored — committed as Vercel build fallback (see HANDOFF.md)
