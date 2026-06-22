@@ -55,8 +55,7 @@ export default async function HomePage() {
             maxWidth: "480px",
           }}
         >
-          Build a circuit and watch quantum get weird. Runs entirely in your
-          browser — powered by Rust and WebAssembly, no server involved.
+          Build a circuit and watch quantum get weird.
         </p>
         <Link
           href="/circuit"
