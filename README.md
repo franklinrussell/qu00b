@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# QU|00⟩B
 
-## Getting Started
+**Meet your first qubit.**
 
-First, run the development server:
+A radically simple, browser-based quantum circuit simulator. The simulation runs 100% client-side — a Rust core compiled to WebAssembly does the state-vector math; Next.js owns the UI.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+🔗 **Live:** [qu00b.app](https://qu00b.app)
+
+---
+
+## What it does
+
+- **Click-to-place gate grid** — 6 qubits × 12 time steps
+- **Gate set:** H · X · Y · Z · S · T · Rx(θ) · Ry(θ) · Rz(θ) · CNOT · CZ
+- **Live probability bars** — state vector updates instantly after every gate placement
+- **Shot histogram** — run N measurements and see the empirical distribution
+- No backend. No network call. The quantum math never leaves your browser.
+
+---
+
+## How it works
+
+### State-vector engine
+
+The Rust crate `crates/qsim` maintains a state of 2ⁿ complex amplitudes as two parallel `f64` arrays (real, imaginary). A single-qubit gate mixes only the amplitude *pairs* that differ in bit `q` — no full 2ⁿ × 2ⁿ matrix is ever constructed. Cost is O(2ⁿ) per gate.
+
+```
+|ψ⟩ = Σ αₖ |k⟩    (k ∈ {0,1}ⁿ)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Controlled gates (CNOT, CZ) use the same loop, guarded by a control-bit check.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### WebAssembly boundary
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`wasm-pack --target web` compiles the crate to an ESM bundle (`src/qsim-pkg/`). The TypeScript wrapper (`src/lib/qsim.ts`) loads the wasm once via `init()` and exposes a `run(circuit, shots?)` function that returns `{ probs, counts? }`.
 
-## Learn More
+### Example: Bell state
 
-To learn more about Next.js, take a look at the following resources:
+```ts
+import { run } from "@/lib/qsim";
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+const bellState = {
+  id: "bell",
+  name: "Bell state",
+  qubits: 2,
+  gates: [
+    { type: "H",    target: 0, col: 0 },
+    { type: "CNOT", target: 1, control: 0, col: 1 },
+  ],
+};
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+const { probs } = run(bellState);
+// probs[0] ≈ 0.5  → |00⟩
+// probs[3] ≈ 0.5  → |11⟩
+// probs[1] = probs[2] = 0
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Running locally
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+git clone https://github.com/franklinrussell/qu00b
+cd qu00b
+npm install
+npm run dev          # http://localhost:3000
+```
+
+To rebuild the wasm (requires Rust + wasm-pack):
+
+```bash
+npm run build:wasm   # wasm-pack build crates/qsim → src/qsim-pkg/
+```
+
+The compiled `src/qsim-pkg/` is committed so Vercel deploys work without a Rust toolchain.
+
+---
+
+## Project structure
+
+```
+crates/qsim/        — Rust state-vector simulator (MIT OR Apache-2.0)
+  src/lib.rs        — Sim struct, gate methods, #[cfg(test)] kernel tests
+src/
+  lib/qsim.ts       — TS init + run() wrapper
+  app/circuit/      — Main simulator UI (CircuitSimulator.tsx)
+  lib/              — onejsonfile storage, auth adapter, rate limiter
+  components/       — Header, Footer, Logo
+```
+
+---
+
+## License
+
+Dual-licensed under [MIT](LICENSE-MIT) OR [Apache-2.0](LICENSE-APACHE) — your choice.
+
+Built with [Birch Tree Studio](https://birchtreestudio.dev) design system.
