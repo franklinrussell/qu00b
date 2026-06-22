@@ -1,4 +1,4 @@
-import type { UsersDoc, SessionsDoc, AuthMetaDoc, RateLimitDoc, CircuitsDoc } from "@/types";
+import type { UsersDoc, SessionsDoc, AuthMetaDoc, RateLimitDoc, CircuitsDoc, AccountsDoc } from "@/types";
 
 const BASE_URL = "https://onejsonfile.com/api/v1/files";
 
@@ -114,6 +114,29 @@ export async function patchRateLimit(partial: RateLimitDoc): Promise<void> {
   const token = rateLimitToken();
   if (!token) return;
   await patch(token, partial);
+}
+
+function accountsToken() {
+  const t = process.env.ONEJSONFILE_ACCOUNTS_TOKEN;
+  if (!t) throw new Error("ONEJSONFILE_ACCOUNTS_TOKEN not set");
+  return t;
+}
+
+export async function readAccounts(): Promise<AccountsDoc> {
+  try {
+    return await read<AccountsDoc>(accountsToken());
+  } catch {
+    return {};
+  }
+}
+
+export async function updateAccounts(
+  mutate: (d: AccountsDoc) => AccountsDoc | Promise<AccountsDoc>
+): Promise<AccountsDoc> {
+  const current = await readAccounts();
+  const next = await mutate(current);
+  await write(accountsToken(), next);
+  return next;
 }
 
 function circuitsToken() {

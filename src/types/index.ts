@@ -1,5 +1,7 @@
 export interface Qu00bUser {
   email: string;
+  name: string;       // GitHub login (username)
+  avatarUrl: string;
   createdAt: string;
 }
 
@@ -16,6 +18,9 @@ export interface AuthMetaDoc {
 }
 
 export type RateLimitDoc = Record<string, number>;
+
+// "github:providerAccountId" → userId
+export type AccountsDoc = Record<string, string>;
 
 export type GateType =
   | "H" | "X" | "Y" | "Z" | "S" | "T"

@@ -1,6 +1,6 @@
-import { SignInForm } from "./SignInForm";
 import { Logo } from "@/components/Logo";
 import Link from "next/link";
+import { GitHubSignIn } from "./GitHubSignIn";
 
 export const metadata = {
   title: "Sign in — qu00b",
@@ -33,7 +33,7 @@ export default function SignInPage() {
           textAlign: "center",
         }}
       >
-        Sign in to QU|00&#x27E9;B
+        Save your circuits
       </h1>
       <p
         style={{
@@ -42,11 +42,13 @@ export default function SignInPage() {
           color: "#9CA3AF",
           marginBottom: "2rem",
           textAlign: "center",
+          maxWidth: "320px",
         }}
       >
-        Enter your email and we&rsquo;ll send a magic link.
+        Sign in with GitHub to save and revisit your circuits across sessions.
+        No account needed to run the simulator.
       </p>
-      <SignInForm />
+      <GitHubSignIn />
     </div>
   );
 }
