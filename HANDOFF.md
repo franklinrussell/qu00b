@@ -8,6 +8,8 @@ Part of Birch Tree Studio's public-portfolio. Lives at qu00b.app.
 
 **Rust/WebAssembly quantum kernel** — the simulation engine is a Rust crate at `crates/qsim/` compiled to WASM via wasm-pack. This is intentional and is the whole point of the app. The TS-only BTS default does not apply here. All quantum math lives in `crates/qsim/src/lib.rs`; the TS wrapper is `src/lib/qsim.ts`.
 
+**GitHub OAuth instead of magic-link** — BTS default is Nodemailer/Resend magic-link. qu00b uses GitHub OAuth (`next-auth/providers/github`). The adapter implements `getUserByAccount` and `linkAccount` via a dedicated `accounts` onejsonfile collection keyed as `"github:providerAccountId"` → `userId`. GitHub username (`login`) is stored as `Qu00bUser.name`; avatar URL as `Qu00bUser.avatarUrl`. The `AuthMetaDoc` / `verificationTokens` collection is retained in the adapter interface but is never called by GitHub OAuth flow.
+
 **Dual license** — MIT OR Apache-2.0 (standard open-source dual), not BTS-typical "all rights reserved." Recorded in LICENSE-MIT and LICENSE-APACHE.
 
 ---
@@ -17,12 +19,13 @@ Part of Birch Tree Studio's public-portfolio. Lives at qu00b.app.
 | Route | Notes |
 |---|---|
 | `/` | Landing page |
+| `/about` | What qu00b is, engine explanation, name etymology |
 | `/circuit` | Main simulator UI (anonymous OK) |
-| `/signin` | Magic-link auth |
-| `/privacy` | Privacy policy |
+| `/signin` | GitHub OAuth — single "Continue with GitHub" button |
+| `/privacy` | Privacy policy (GitHub OAuth-specific) |
 | `/terms` | Terms of service |
 | `/support` | Contact form — PUBLIC (anonymous-use Pomarola model) |
-| `/api/auth/[...nextauth]` | NextAuth v5 handler + rate-limit intercept |
+| `/api/auth/[...nextauth]` | NextAuth v5 handler (GET + POST, no custom intercept) |
 | `/api/support` | Resend email route |
 | `/api/circuits` | GET/PUT/DELETE circuits — auth-required |
 
@@ -53,17 +56,34 @@ Stored in onejsonfile as `Record<"userId:circuitId", Circuit & { userId }>`.
 
 ## onejsonfile tokens
 
-Five tokens required — set in `.env.local` and Vercel production:
+Six tokens required — set in `.env.local` and Vercel production:
 
 | Env var | Collection |
 |---|---|
 | `ONEJSONFILE_USERS_TOKEN` | `Record<userId, Qu00bUser>` |
 | `ONEJSONFILE_SESSIONS_TOKEN` | `Record<sessionToken, { userId, expires }>` |
-| `ONEJSONFILE_AUTH_TOKEN` | `{ verificationTokens: Record<...> }` |
-| `ONEJSONFILE_RATELIMIT_TOKEN` | `Record<hashedKey, count>` |
+| `ONEJSONFILE_AUTH_TOKEN` | `{ verificationTokens: Record<...> }` (unused by GitHub OAuth, kept for adapter interface) |
+| `ONEJSONFILE_RATELIMIT_TOKEN` | `Record<hashedKey, count>` (unused by GitHub OAuth, kept for future use) |
 | `ONEJSONFILE_CIRCUITS_TOKEN` | `Record<userId:circuitId, Circuit>` |
+| `ONEJSONFILE_ACCOUNTS_TOKEN` | `Record<"github:providerAccountId", userId>` |
 
 **TODO:** Mint these tokens at onejsonfile.com and paste into `.env.local`, then push to Vercel.
+
+GitHub OAuth env vars also required:
+
+| Env var | Where to get it |
+|---|---|
+| `AUTH_GITHUB_ID` | GitHub → Settings → Developer settings → OAuth Apps → qu00b |
+| `AUTH_GITHUB_SECRET` | Same. Callback URL: `https://qu00b.app/api/auth/callback/github` |
+
+---
+
+## GitHub OAuth callback URLs
+
+Register these in the GitHub OAuth App settings:
+
+- **Production:** `https://qu00b.app/api/auth/callback/github`
+- **Local dev:** `http://localhost:3000/api/auth/callback/github`
 
 ---
 
