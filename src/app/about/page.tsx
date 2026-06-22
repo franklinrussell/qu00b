@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { auth } from "@/auth";
+import { Wordmark } from "@/components/Wordmark";
 
 export const metadata = {
   title: "About — qu00b",
@@ -23,7 +24,7 @@ export default async function AboutPage() {
       <Header email={email} name={name} image={image} />
       <main style={{ flex: 1, maxWidth: "680px", margin: "0 auto", padding: "3rem 1.5rem", width: "100%", boxSizing: "border-box" }}>
         <h1 style={{ fontFamily: "var(--font-bebas)", fontSize: "2.5rem", letterSpacing: "0.04em", color: "#111", lineHeight: 1, marginBottom: "2rem" }}>
-          About qu00b
+          About <Wordmark />
         </h1>
         <div style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.9375rem", color: "#374151", lineHeight: 1.7, display: "flex", flexDirection: "column", gap: "1.5rem" }}>
 
