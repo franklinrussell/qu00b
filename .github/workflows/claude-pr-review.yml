@@ -1,0 +1,41 @@
+name: Claude PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude PR review
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            You are reviewing pull request #${{ github.event.pull_request.number }} in ${{ github.repository }}.
+
+            Please:
+            1. Inspect the PR diff (use `gh pr diff ${{ github.event.pull_request.number }}` or read the changed files directly).
+            2. Write a concise review covering:
+               - A short summary of what changed and why.
+               - Potential bugs or logic errors.
+               - Security concerns (injection, auth gaps, exposed secrets, unsafe deserialization, insecure defaults).
+               - Edge cases the author may have missed.
+               - Regression risk — anything that could break existing behavior.
+               - Style or maintainability issues only if they materially matter.
+            3. Post the review as a single PR comment using `gh pr comment ${{ github.event.pull_request.number }} --body "..."`.
+
+            Be direct and specific — cite file paths and line numbers. Skip praise for obvious or trivial things. If the PR is small and clean, say so briefly rather than padding the review.
