@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ensureReady, run } from "@/lib/qsim";
+import { SavedCircuits } from "./SavedCircuits";
 import type { Gate, GateType, Circuit } from "@/types";
 
 const ACCENT = "#14B8A6";
@@ -9,16 +10,11 @@ const N_QUBITS = 6;
 const N_COLS = 12;
 const SINGLE_GATES: GateType[] = ["H", "X", "Y", "Z", "S", "T", "RX", "RY", "RZ"];
 const TWO_QUBIT_GATES: GateType[] = ["CNOT", "CZ"];
-const ALL_GATES: GateType[] = [...SINGLE_GATES, ...TWO_QUBIT_GATES];
 const DEFAULT_THETA = Math.PI / 2;
 const DEFAULT_SHOTS = 512;
 
 function emptyCircuit(): Circuit {
   return { id: "local", name: "Untitled", qubits: N_QUBITS, gates: [] };
-}
-
-function gateKey(g: Gate) {
-  return `${g.col}-${g.target}-${g.type}`;
 }
 
 function basisLabel(index: number, n: number): string {
@@ -55,7 +51,7 @@ function GateChip({
   );
 }
 
-type SaveStatus = "idle" | "saving" | "saved" | "error";
+type SaveStatus = "idle" | "naming" | "saving" | "saved" | "error";
 
 export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
   const [ready, setReady] = useState(false);
@@ -68,6 +64,9 @@ export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
   const [showHistogram, setShowHistogram] = useState(false);
   const [theta, setTheta] = useState(DEFAULT_THETA);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
+  const [nameDraft, setNameDraft] = useState("");
+  const [refreshKey, setRefreshKey] = useState(0);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     ensureReady().then(() => setReady(true));
@@ -87,6 +86,10 @@ export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
   useEffect(() => {
     if (ready) simulate(circuit);
   }, [ready, circuit, simulate]);
+
+  useEffect(() => {
+    if (saveStatus === "naming") nameInputRef.current?.focus();
+  }, [saveStatus]);
 
   function handleCellClick(row: number, col: number) {
     const isTwoQubit = TWO_QUBIT_GATES.includes(selectedGate);
@@ -140,19 +143,35 @@ export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
   }
 
   function handleClear() {
-    const next = emptyCircuit();
-    setCircuit(next);
+    setCircuit(emptyCircuit());
     setCounts(null);
     setShowHistogram(false);
+    setSaveStatus("idle");
   }
 
-  async function handleSave() {
+  function handleLoad(c: Circuit) {
+    setCircuit(c);
+    setCounts(null);
+    setShowHistogram(false);
+    setSaveStatus("idle");
+  }
+
+  function handleSaveClick() {
     if (saveStatus === "saving") return;
+    if (circuit.id === "local") {
+      setNameDraft(circuit.name === "Untitled" ? "" : circuit.name);
+      setSaveStatus("naming");
+    } else {
+      doSave(circuit.name);
+    }
+  }
+
+  async function doSave(name: string) {
     setSaveStatus("saving");
     try {
       const id = circuit.id === "local" ? crypto.randomUUID() : circuit.id;
-      const toSave = { ...circuit, id };
-      if (circuit.id === "local") setCircuit(toSave);
+      const toSave: Circuit = { ...circuit, id, name: name.trim() || "Untitled" };
+      setCircuit(toSave);
       const res = await fetch("/api/circuits", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -160,6 +179,7 @@ export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
       });
       if (!res.ok) throw new Error("save failed");
       setSaveStatus("saved");
+      setRefreshKey((k) => k + 1);
       setTimeout(() => setSaveStatus("idle"), 2000);
     } catch {
       setSaveStatus("error");
@@ -410,25 +430,59 @@ export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
           </button>
         </div>
         {signedIn && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "6px" }}>
-            <button
-              onClick={handleSave}
-              disabled={saveStatus === "saving"}
-              style={{
-                padding: "8px 16px",
-                border: `1px solid ${saveStatus === "error" ? "#FF3B30" : ACCENT}`,
-                borderRadius: "0.75rem",
-                background: "#fff",
-                color: saveStatus === "error" ? "#FF3B30" : ACCENT,
-                fontFamily: "var(--font-jakarta)",
-                fontWeight: 600,
-                fontSize: "0.85rem",
-                cursor: saveStatus === "saving" ? "default" : "pointer",
-                opacity: saveStatus === "saving" ? 0.6 : 1,
-              }}
-            >
-              {saveStatus === "saving" ? "Saving…" : saveStatus === "saved" ? "Saved ✓" : "Save circuit"}
-            </button>
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            {saveStatus === "naming" ? (
+              <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                <input
+                  ref={nameInputRef}
+                  value={nameDraft}
+                  onChange={(e) => setNameDraft(e.target.value)}
+                  placeholder="Circuit name"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") doSave(nameDraft);
+                    if (e.key === "Escape") setSaveStatus("idle");
+                  }}
+                  style={{ padding: "6px 10px", border: `1px solid ${ACCENT}`, borderRadius: "0.75rem", fontFamily: "var(--font-jakarta)", fontSize: "0.85rem", outline: "none", width: "160px" }}
+                />
+                <button
+                  onClick={() => doSave(nameDraft)}
+                  style={{ padding: "6px 14px", border: "none", borderRadius: "0.75rem", background: ACCENT, color: "#fff", fontFamily: "var(--font-jakarta)", fontWeight: 600, fontSize: "0.85rem", cursor: "pointer" }}
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => setSaveStatus("idle")}
+                  style={{ padding: "6px 10px", border: "1px solid #E5E5E5", borderRadius: "0.75rem", background: "#fff", color: "#9CA3AF", fontFamily: "var(--font-jakarta)", fontSize: "0.85rem", cursor: "pointer" }}
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={handleSaveClick}
+                disabled={saveStatus === "saving"}
+                style={{
+                  padding: "8px 16px",
+                  border: `1px solid ${saveStatus === "error" ? "#FF3B30" : ACCENT}`,
+                  borderRadius: "0.75rem",
+                  background: "#fff",
+                  color: saveStatus === "error" ? "#FF3B30" : ACCENT,
+                  fontFamily: "var(--font-jakarta)",
+                  fontWeight: 600,
+                  fontSize: "0.85rem",
+                  cursor: saveStatus === "saving" ? "default" : "pointer",
+                  opacity: saveStatus === "saving" ? 0.6 : 1,
+                }}
+              >
+                {saveStatus === "saving"
+                  ? "Saving…"
+                  : saveStatus === "saved"
+                  ? "Saved ✓"
+                  : circuit.id !== "local"
+                  ? `Save "${circuit.name}"`
+                  : "Save circuit"}
+              </button>
+            )}
             {saveStatus === "error" && (
               <span style={{ fontSize: "0.75rem", color: "#FF3B30", fontFamily: "var(--font-jakarta)" }}>
                 Save failed — please try again.
@@ -515,7 +569,7 @@ export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
         </div>
       )}
 
-      {/* Shot histogram */}
+      {/* Measurement histogram */}
       {showHistogram && counts && (
         <div>
           <div
@@ -584,6 +638,11 @@ export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
             })}
           </div>
         </div>
+      )}
+
+      {/* My circuits panel — signed-in only */}
+      {signedIn && (
+        <SavedCircuits onLoad={handleLoad} refreshKey={refreshKey} />
       )}
     </div>
   );
