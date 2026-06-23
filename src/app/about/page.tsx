@@ -85,6 +85,42 @@ export default async function AboutPage() {
           </p>
 
           <h2 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.3rem", letterSpacing: "0.04em", color: "#111", marginBottom: 0 }}>
+            Three things to try (and why they&rsquo;re strange)
+          </h2>
+          <p>
+            Open the simulator and hit{" "}
+            <a href="/circuit" style={{ color: "#14B8A6" }}>Try this</a>{" "}
+            — each preset loads in one click. Here&rsquo;s what you&rsquo;re actually looking at.
+          </p>
+          <p>
+            <strong>The fair coin.</strong> One Hadamard gate turns a definite 0 into a perfect
+            50/50. That&rsquo;s not the computer being unsure — it&rsquo;s the qubit genuinely
+            being both at once until you measure it. Run it 512 times and watch the two bars
+            hover near half each.
+          </p>
+          <p>
+            <strong>The Bell pair.</strong> Two qubits, entangled. Only the outcomes where they
+            agree ever show up — both 0 or both 1, never a mix. On its own each qubit is still
+            a 50/50 coin. But the moment you&rsquo;d measure one, the other&rsquo;s answer is
+            fixed, instantly, with no signal passing between them. Two ordinary coins can&rsquo;t
+            be correlated like this no matter how you flip them. Einstein hated it; the
+            experiments keep proving it real.
+          </p>
+          <p>
+            <strong>Deutsch&rsquo;s trick.</strong> Here&rsquo;s a real algorithm. There&rsquo;s
+            a hidden one-bit function, and the only question is whether it&rsquo;s
+            &ldquo;constant&rdquo; or &ldquo;balanced.&rdquo; A normal computer has to test it
+            twice to be sure. This circuit answers in a single evaluation — the qubit comes out
+            1 for balanced, 0 for constant, guaranteed. It&rsquo;s tiny and a little contrived,
+            but it&rsquo;s the smallest honest proof that asking a question in superposition can
+            cost strictly fewer steps than asking it one input at a time.
+          </p>
+          <p>
+            None of this is the computer being fast. It&rsquo;s the computer following different
+            rules.
+          </p>
+
+          <h2 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.3rem", letterSpacing: "0.04em", color: "#111", marginBottom: 0 }}>
             Built by
           </h2>
           <p>
