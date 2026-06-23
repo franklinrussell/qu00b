@@ -4,38 +4,26 @@ import { useState } from "react";
 
 const ACCENT = "#14B8A6";
 
-const lockedStyle = {
-  color: "#9CA3AF",
-  background: "#FAFAFA",
-  cursor: "default" as const,
-};
-
-export function SupportForm({
-  name: prefillName,
-  email: prefillEmail,
-}: {
-  name: string | null;
-  email: string | null;
-}) {
-  const [name, setName] = useState(prefillName ?? "");
-  const [emailVal, setEmailVal] = useState(prefillEmail ?? "");
+export function SupportForm({ signedIn }: { signedIn: boolean }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const nameLocked = !!prefillName;
-  const emailLocked = !!prefillEmail;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
+      const body = signedIn
+        ? { message }
+        : { name, email, message };
       const res = await fetch("/api/support", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email: emailVal, message }),
+        body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error("Failed");
       setSent(true);
@@ -58,10 +46,9 @@ export function SupportForm({
     boxSizing: "border-box" as const,
   };
 
-  function focusProps(locked: boolean) {
+  function focusHandlers() {
     return {
       onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        if (locked) return;
         e.currentTarget.style.borderColor = ACCENT;
         e.currentTarget.style.boxShadow = `0 0 0 3px ${ACCENT}33`;
       },
@@ -82,25 +69,27 @@ export function SupportForm({
 
   return (
     <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-      <input
-        required
-        placeholder="Your name"
-        value={name}
-        readOnly={nameLocked}
-        onChange={(e) => setName(e.target.value)}
-        style={{ ...inputStyle, ...(nameLocked ? lockedStyle : {}) }}
-        {...focusProps(nameLocked)}
-      />
-      <input
-        required
-        type="email"
-        placeholder="Email"
-        value={emailVal}
-        readOnly={emailLocked}
-        onChange={(e) => setEmailVal(e.target.value)}
-        style={{ ...inputStyle, ...(emailLocked ? lockedStyle : {}) }}
-        {...focusProps(emailLocked)}
-      />
+      {!signedIn && (
+        <>
+          <input
+            required
+            placeholder="Your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            style={inputStyle}
+            {...focusHandlers()}
+          />
+          <input
+            required
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={inputStyle}
+            {...focusHandlers()}
+          />
+        </>
+      )}
       <textarea
         required
         placeholder="How can we help?"
@@ -108,10 +97,13 @@ export function SupportForm({
         onChange={(e) => setMessage(e.target.value)}
         rows={5}
         style={{ ...inputStyle, resize: "vertical" }}
-        onFocus={(e) => { e.currentTarget.style.borderColor = ACCENT; e.currentTarget.style.boxShadow = `0 0 0 3px ${ACCENT}33`; }}
-        onBlur={(e) => { e.currentTarget.style.borderColor = "#E5E5E5"; e.currentTarget.style.boxShadow = "none"; }}
+        {...focusHandlers()}
       />
-      {error && <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.8rem", color: "#FF3B30" }}>{error}</p>}
+      {error && (
+        <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.8rem", color: "#FF3B30" }}>
+          {error}
+        </p>
+      )}
       <button
         type="submit"
         disabled={loading}

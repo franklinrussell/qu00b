@@ -68,9 +68,9 @@ export function OnejsonfileAdapter(): Adapter {
       if (u) {
         const updated: Qu00bUser = {
           ...u,
-          name: user.name ?? u.name,
-          avatarUrl: user.image ?? u.avatarUrl,
-          email: user.email ?? u.email,
+          name: user.name || u.name,
+          avatarUrl: user.image || u.avatarUrl,
+          email: user.email || u.email,   // prefer non-empty; "|| " not "??" so "" doesn't win
         };
         await updateUsers((d) => ({ ...d, [user.id]: updated }));
         return toAdapterUser(user.id, updated);

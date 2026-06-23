@@ -12,11 +12,13 @@ export default async function SupportPage() {
   let email: string | null = null;
   let name: string | null = null;
   let image: string | null = null;
+  let signedIn = false;
   try {
     const session = await auth();
     email = session?.user?.email ?? null;
     name = session?.user?.name ?? null;
     image = session?.user?.image ?? null;
+    signedIn = !!(session?.user?.id);
   } catch {
     // anonymous mode
   }
@@ -40,7 +42,7 @@ export default async function SupportPage() {
         <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.875rem", color: "#9CA3AF", marginBottom: "2.25rem" }}>
           We&rsquo;ll get back to you.
         </p>
-        <SupportForm name={name} email={email} />
+        <SupportForm signedIn={signedIn} />
       </main>
       <Footer />
     </div>
