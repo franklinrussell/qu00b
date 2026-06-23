@@ -55,6 +55,8 @@ function GateChip({
   );
 }
 
+type SaveStatus = "idle" | "saving" | "saved" | "error";
+
 export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
   const [ready, setReady] = useState(false);
   const [circuit, setCircuit] = useState<Circuit>(emptyCircuit);
@@ -65,6 +67,7 @@ export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
   const [shots, setShots] = useState(DEFAULT_SHOTS);
   const [showHistogram, setShowHistogram] = useState(false);
   const [theta, setTheta] = useState(DEFAULT_THETA);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
 
   useEffect(() => {
     ensureReady().then(() => setReady(true));
@@ -141,6 +144,27 @@ export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
     setCircuit(next);
     setCounts(null);
     setShowHistogram(false);
+  }
+
+  async function handleSave() {
+    if (saveStatus === "saving") return;
+    setSaveStatus("saving");
+    try {
+      const id = circuit.id === "local" ? crypto.randomUUID() : circuit.id;
+      const toSave = { ...circuit, id };
+      if (circuit.id === "local") setCircuit(toSave);
+      const res = await fetch("/api/circuits", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(toSave),
+      });
+      if (!res.ok) throw new Error("save failed");
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus("idle"), 2000);
+    } catch {
+      setSaveStatus("error");
+      setTimeout(() => setSaveStatus("idle"), 3000);
+    }
   }
 
   const maxProb = probs ? Math.max(...Array.from(probs)) : 1;
@@ -386,22 +410,31 @@ export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
           </button>
         </div>
         {signedIn && (
-          <button
-            onClick={() => {/* save circuit — stub for v1 */}}
-            style={{
-              padding: "8px 16px",
-              border: `1px solid ${ACCENT}`,
-              borderRadius: "0.75rem",
-              background: "#fff",
-              color: ACCENT,
-              fontFamily: "var(--font-jakarta)",
-              fontWeight: 600,
-              fontSize: "0.85rem",
-              cursor: "pointer",
-            }}
-          >
-            Save circuit
-          </button>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "6px" }}>
+            <button
+              onClick={handleSave}
+              disabled={saveStatus === "saving"}
+              style={{
+                padding: "8px 16px",
+                border: `1px solid ${saveStatus === "error" ? "#FF3B30" : ACCENT}`,
+                borderRadius: "0.75rem",
+                background: "#fff",
+                color: saveStatus === "error" ? "#FF3B30" : ACCENT,
+                fontFamily: "var(--font-jakarta)",
+                fontWeight: 600,
+                fontSize: "0.85rem",
+                cursor: saveStatus === "saving" ? "default" : "pointer",
+                opacity: saveStatus === "saving" ? 0.6 : 1,
+              }}
+            >
+              {saveStatus === "saving" ? "Saving…" : saveStatus === "saved" ? "Saved ✓" : "Save circuit"}
+            </button>
+            {saveStatus === "error" && (
+              <span style={{ fontSize: "0.75rem", color: "#FF3B30", fontFamily: "var(--font-jakarta)" }}>
+                Save failed — please try again.
+              </span>
+            )}
+          </div>
         )}
         {!signedIn && (
           <span style={{ fontSize: "0.78rem", color: "#9CA3AF" }}>
