@@ -3,12 +3,16 @@ import { getUserId } from "@/lib/get-user-id";
 import { readCircuits, updateCircuits } from "@/lib/onejsonfile";
 import type { Circuit } from "@/types";
 
+type StoredCircuit = Circuit & { userId: string; updatedAt: string };
+
 export async function GET() {
   const userId = await getUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const doc = await readCircuits();
-  const mine = Object.values(doc).filter((c) => (c as Circuit & { userId: string }).userId === userId);
+  const mine = Object.values(doc)
+    .filter((c) => (c as StoredCircuit).userId === userId)
+    .map((c) => c as StoredCircuit);
   return NextResponse.json({ circuits: mine });
 }
 
@@ -22,11 +26,16 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
-  await updateCircuits((doc) => ({
-    ...doc,
-    [`${userId}:${id}`]: { id, name, qubits, gates, userId } as Circuit & { userId: string },
-  }));
+  const stored: StoredCircuit = {
+    id,
+    name,
+    qubits,
+    gates,
+    userId,
+    updatedAt: new Date().toISOString(),
+  };
 
+  await updateCircuits((doc) => ({ ...doc, [`${userId}:${id}`]: stored }));
   return NextResponse.json({ ok: true });
 }
 
@@ -34,7 +43,7 @@ export async function DELETE(req: NextRequest) {
   const userId = await getUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = await req.json();
+  const id = req.nextUrl.searchParams.get("id");
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
   await updateCircuits((doc) => {
