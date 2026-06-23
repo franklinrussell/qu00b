@@ -23,9 +23,12 @@ export default async function AboutPage() {
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Header email={email} name={name} image={image} />
       <main style={{ flex: 1, maxWidth: "680px", margin: "0 auto", padding: "3rem 1.5rem", width: "100%", boxSizing: "border-box" }}>
-        <h1 style={{ fontFamily: "var(--font-bebas)", fontSize: "2.5rem", letterSpacing: "0.04em", color: "#111", lineHeight: 1, marginBottom: "2rem" }}>
+        <h1 style={{ fontFamily: "var(--font-bebas)", fontSize: "2.5rem", letterSpacing: "0.04em", color: "#111", lineHeight: 1, marginBottom: "0.5rem" }}>
           About <Wordmark />
         </h1>
+        <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.875rem", color: "#9CA3AF", marginBottom: "2.5rem" }}>
+          A browser-based quantum circuit simulator powered by Rust and WebAssembly.
+        </p>
         <div style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.9375rem", color: "#374151", lineHeight: 1.7, display: "flex", flexDirection: "column", gap: "1.5rem" }}>
 
           <p>
@@ -94,7 +97,14 @@ export default async function AboutPage() {
             >
               Birch Tree Studio
             </a>{" "}
-            project. Questions or feedback — <a href="/support" style={{ color: "#14B8A6" }}>support page</a>.
+            project.
+          </p>
+
+          <h2 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.3rem", letterSpacing: "0.04em", color: "#111", marginBottom: 0 }}>
+            Questions?
+          </h2>
+          <p>
+            Reach us on the <a href="/support" style={{ color: "#14B8A6" }}>support page</a>.
           </p>
 
         </div>

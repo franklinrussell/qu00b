@@ -19,11 +19,13 @@ export default async function TermsPage() {
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Header email={email} name={name} image={image} />
       <main style={{ flex: 1, maxWidth: "680px", margin: "0 auto", padding: "3rem 1.5rem", width: "100%", boxSizing: "border-box" }}>
-        <h1 style={{ fontFamily: "var(--font-bebas)", fontSize: "2.5rem", letterSpacing: "0.04em", color: "#111", lineHeight: 1, marginBottom: "2rem" }}>
+        <h1 style={{ fontFamily: "var(--font-bebas)", fontSize: "2.5rem", letterSpacing: "0.04em", color: "#111", lineHeight: 1, marginBottom: "0.5rem" }}>
           Terms of Service
         </h1>
-        <div style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.9375rem", color: "#374151", lineHeight: 1.7, display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-          <p><strong>Last updated:</strong> June 2026</p>
+        <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.875rem", color: "#9CA3AF", marginBottom: "2.5rem" }}>
+          Last updated June 2026
+        </p>
+        <div style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.9375rem", color: "#374151", lineHeight: 1.7, display: "flex", flexDirection: "column", gap: "1.5rem" }}>
 
           <p>
             Welcome. qu00b is a browser-based quantum circuit simulator. It&rsquo;s
@@ -78,11 +80,12 @@ export default async function TermsPage() {
           </p>
 
           <h2 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.3rem", letterSpacing: "0.04em", color: "#111", marginBottom: 0 }}>
-            Questions
+            Questions?
           </h2>
           <p>
-            <a href="/support" style={{ color: "#14B8A6" }}>Support page</a> — we read everything.
+            Reach us on the <a href="/support" style={{ color: "#14B8A6" }}>support page</a>.
           </p>
+
         </div>
       </main>
       <Footer />
