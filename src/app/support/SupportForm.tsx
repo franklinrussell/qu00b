@@ -4,13 +4,28 @@ import { useState } from "react";
 
 const ACCENT = "#14B8A6";
 
-export function SupportForm({ email }: { email: string | null }) {
-  const [name, setName] = useState("");
-  const [emailVal, setEmailVal] = useState(email ?? "");
+const lockedStyle = {
+  color: "#9CA3AF",
+  background: "#FAFAFA",
+  cursor: "default" as const,
+};
+
+export function SupportForm({
+  name: prefillName,
+  email: prefillEmail,
+}: {
+  name: string | null;
+  email: string | null;
+}) {
+  const [name, setName] = useState(prefillName ?? "");
+  const [emailVal, setEmailVal] = useState(prefillEmail ?? "");
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const nameLocked = !!prefillName;
+  const emailLocked = !!prefillEmail;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -43,6 +58,20 @@ export function SupportForm({ email }: { email: string | null }) {
     boxSizing: "border-box" as const,
   };
 
+  function focusProps(locked: boolean) {
+    return {
+      onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if (locked) return;
+        e.currentTarget.style.borderColor = ACCENT;
+        e.currentTarget.style.boxShadow = `0 0 0 3px ${ACCENT}33`;
+      },
+      onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        e.currentTarget.style.borderColor = "#E5E5E5";
+        e.currentTarget.style.boxShadow = "none";
+      },
+    };
+  }
+
   if (sent) {
     return (
       <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.9375rem", color: "#374151" }}>
@@ -57,21 +86,20 @@ export function SupportForm({ email }: { email: string | null }) {
         required
         placeholder="Your name"
         value={name}
+        readOnly={nameLocked}
         onChange={(e) => setName(e.target.value)}
-        style={inputStyle}
-        onFocus={(e) => { e.currentTarget.style.borderColor = ACCENT; e.currentTarget.style.boxShadow = `0 0 0 3px ${ACCENT}33`; }}
-        onBlur={(e) => { e.currentTarget.style.borderColor = "#E5E5E5"; e.currentTarget.style.boxShadow = "none"; }}
+        style={{ ...inputStyle, ...(nameLocked ? lockedStyle : {}) }}
+        {...focusProps(nameLocked)}
       />
       <input
         required
         type="email"
         placeholder="Email"
         value={emailVal}
-        readOnly={!!email}
+        readOnly={emailLocked}
         onChange={(e) => setEmailVal(e.target.value)}
-        style={{ ...inputStyle, color: email ? "#9CA3AF" : "#111", background: email ? "#FAFAFA" : "#fff" }}
-        onFocus={(e) => { if (!email) { e.currentTarget.style.borderColor = ACCENT; e.currentTarget.style.boxShadow = `0 0 0 3px ${ACCENT}33`; } }}
-        onBlur={(e) => { e.currentTarget.style.borderColor = "#E5E5E5"; e.currentTarget.style.boxShadow = "none"; }}
+        style={{ ...inputStyle, ...(emailLocked ? lockedStyle : {}) }}
+        {...focusProps(emailLocked)}
       />
       <textarea
         required

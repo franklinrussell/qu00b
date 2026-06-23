@@ -38,9 +38,9 @@ export default async function SupportPage() {
           Support
         </h1>
         <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.875rem", color: "#9CA3AF", marginBottom: "2.25rem" }}>
-          We&rsquo;ll get back to you within a day or two.
+          We&rsquo;ll get back to you.
         </p>
-        <SupportForm email={email} />
+        <SupportForm name={name} email={email} />
       </main>
       <Footer />
     </div>
