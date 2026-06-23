@@ -1,0 +1,16 @@
+{
+  "name": "qsim",
+  "type": "module",
+  "version": "0.1.0",
+  "license": "MIT OR Apache-2.0",
+  "files": [
+    "qsim_bg.wasm",
+    "qsim.js",
+    "qsim.d.ts"
+  ],
+  "main": "qsim.js",
+  "types": "qsim.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

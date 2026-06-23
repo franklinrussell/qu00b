@@ -1,0 +1,9 @@
+# Prevent git from mangling binary files
+*.wasm binary
+
+# Exclude generated Wasm glue from GitHub language stats
+src/qsim-pkg/** linguist-generated=true
+
+# Ensure the real Rust source is detected
+crates/qsim/**  linguist-detectable=true
+*.rs            linguist-detectable=true

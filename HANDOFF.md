@@ -87,15 +87,28 @@ Register these in the GitHub OAuth App settings:
 
 ---
 
-## Vercel wasm-pack build
+## Prebuilt Wasm — why src/qsim-pkg/ is committed
 
-wasm-pack is not available in the Vercel build environment by default. Two options:
+Vercel has no Rust toolchain, so `src/qsim-pkg/` is committed on purpose.
+The build command is plain `next build`; no wasm-pack runs at deploy time.
 
-1. **Committed fallback (current approach):** `src/qsim-pkg/` is NOT gitignored. The compiled wasm output is committed to the repo. Vercel builds Next.js only; no Rust toolchain needed. Update by running `wasm-pack build crates/qsim --target web --out-dir src/qsim-pkg` locally and committing the result.
+**wasm-pack writes its own `.gitignore` inside the output directory** (containing `*`)
+which causes all generated files to be invisible to git. After every regeneration you MUST
+delete that file before staging:
 
-2. **Native Vercel build (future):** Add a `vercel.json` with `installCommand` that installs Rust + wasm-pack before the Next.js build. Requires `rustup` and `wasm-pack install` in the build step. Document the `vercel.json` approach here when implemented.
+```bash
+# From the repo root (qu00b/):
+wasm-pack build crates/qsim --target web --out-dir ../../src/qsim-pkg
+rm src/qsim-pkg/.gitignore
+git add -f src/qsim-pkg
+git commit -m "Update prebuilt qsim-pkg"
+```
 
-Current approach: committed `src/qsim-pkg/`. This is intentional.
+Note: `--out-dir ../../src/qsim-pkg` is relative to the **crate directory** (`crates/qsim/`),
+so `../../` walks up to the repo root and then into `src/qsim-pkg/`. A bare `--out-dir
+src/qsim-pkg` (without `../../`) would write into `crates/qsim/src/qsim-pkg/` instead.
+
+A stale commit here ships old kernel code silently. Regenerate any time `crates/qsim/src/lib.rs` changes.
 
 ---
 
@@ -110,7 +123,7 @@ Current approach: committed `src/qsim-pkg/`. This is intentional.
 
 v1 is intentionally locked to:
 - Fixed 6-qubit register
-- 12 time columns
+- 14 time columns
 - Gate set: H/X/Y/Z/S/T/Rx/Ry/Rz/CNOT/CZ
 - Live probability bars + shot histogram
 
