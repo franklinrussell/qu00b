@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, Coins, Link2, Share2, FlaskConical } from "lucide-react";
+import { Zap, Coins, Link2, Share2, FlaskConical, BarChart2, TrendingUp, RotateCcw } from "lucide-react";
 import type { Circuit, Gate } from "@/types";
 
 const ACCENT = "#14B8A6";
@@ -83,6 +83,93 @@ const EXAMPLES: Example[] = [
     },
     does: "Decides if a hidden 1-bit function is constant or balanced in one query (classical needs two). This loads the balanced case.",
     look: "Watch q0 only: it reads 1 (deterministically) = the function is balanced. The CNOT in t2 is the function — delete it and re-run to see q0 flip to 0 (constant). q1 is the ancilla; ignore it.",
+  },
+  // ── Grover's search: step-through in 3 presets ──────────────────────────
+  {
+    id: "grover-0",
+    label: "Grover — 0 iter",
+    Icon: BarChart2,
+    circuit: {
+      id: "local",
+      name: "Grover — 0 iterations",
+      qubits: N_QUBITS,
+      gates: [
+        { type: "H", target: 0, col: 0 },
+        { type: "H", target: 1, col: 0 },
+      ] as Gate[],
+    },
+    does: "Uniform superposition over N=4 states — the flat baseline before any search.",
+    look: "All four bars at 25%. No interference yet; the oracle hasn't run. Load step 1 to start the search.",
+  },
+  {
+    id: "grover-1",
+    label: "Grover — 1 iter",
+    Icon: TrendingUp,
+    circuit: {
+      id: "local",
+      name: "Grover — 1 iteration",
+      qubits: N_QUBITS,
+      gates: [
+        // Init
+        { type: "H", target: 0, col: 0 },
+        { type: "H", target: 1, col: 0 },
+        // Oracle: CZ phase-flips |11⟩ directly
+        { type: "CZ", target: 1, control: 0, col: 1 },
+        // Diffuser: H X CZ X H
+        { type: "H", target: 0, col: 2 },
+        { type: "H", target: 1, col: 2 },
+        { type: "X", target: 0, col: 3 },
+        { type: "X", target: 1, col: 3 },
+        { type: "CZ", target: 1, control: 0, col: 4 },
+        { type: "X", target: 0, col: 5 },
+        { type: "X", target: 1, col: 5 },
+        { type: "H", target: 0, col: 6 },
+        { type: "H", target: 1, col: 6 },
+      ] as Gate[],
+    },
+    does: "One oracle + diffuser: interference amplifies the marked state |11⟩ and suppresses the rest.",
+    look: "The |11⟩ bar hits 100% — one step, perfect certainty. Compare with step 0: amplitude concentrated entirely by interference, not elimination. This is optimal for N=4.",
+  },
+  {
+    id: "grover-2",
+    label: "Grover — 2 iter",
+    Icon: RotateCcw,
+    circuit: {
+      id: "local",
+      name: "Grover — 2 iterations",
+      qubits: N_QUBITS,
+      gates: [
+        // Init
+        { type: "H", target: 0, col: 0 },
+        { type: "H", target: 1, col: 0 },
+        // Oracle 1
+        { type: "CZ", target: 1, control: 0, col: 1 },
+        // Diffuser 1
+        { type: "H", target: 0, col: 2 },
+        { type: "H", target: 1, col: 2 },
+        { type: "X", target: 0, col: 3 },
+        { type: "X", target: 1, col: 3 },
+        { type: "CZ", target: 1, control: 0, col: 4 },
+        { type: "X", target: 0, col: 5 },
+        { type: "X", target: 1, col: 5 },
+        { type: "H", target: 0, col: 6 },
+        { type: "H", target: 1, col: 6 },
+        // Oracle 2
+        { type: "CZ", target: 1, control: 0, col: 7 },
+        // Diffuser 2
+        { type: "H", target: 0, col: 8 },
+        { type: "H", target: 1, col: 8 },
+        { type: "X", target: 0, col: 9 },
+        { type: "X", target: 1, col: 9 },
+        { type: "CZ", target: 1, control: 0, col: 10 },
+        { type: "X", target: 0, col: 11 },
+        { type: "X", target: 1, col: 11 },
+        { type: "H", target: 0, col: 12 },
+        { type: "H", target: 1, col: 12 },
+      ] as Gate[],
+    },
+    does: "A second iteration: Grover is a rotation, not a ratchet. It overshoots.",
+    look: "All four bars back to 25% — the rotation went past the target and came full circle. Optimal for N=4 is exactly 1 iteration. A third step would amplify again, then overshoot again; it cycles.",
   },
 ];
 

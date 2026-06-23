@@ -8,7 +8,7 @@ import type { Gate, GateType, Circuit } from "@/types";
 
 const ACCENT = "#14B8A6";
 const N_QUBITS = 6;
-const N_COLS = 12;
+const N_COLS = 14;
 const SINGLE_GATES: GateType[] = ["H", "X", "Y", "Z", "S", "T", "RX", "RY", "RZ"];
 const TWO_QUBIT_GATES: GateType[] = ["CNOT", "CZ"];
 const DEFAULT_THETA = Math.PI / 2;
