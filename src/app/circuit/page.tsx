@@ -40,7 +40,7 @@ export default async function CircuitPage() {
         <p style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.875rem", color: "#9CA3AF", marginBottom: "1.5rem" }}>
           Click a cell to place a gate. Click again to remove. Two-qubit gates: click control row first, then target.
         </p>
-        <CircuitSimulator email={email} />
+        <CircuitSimulator signedIn={!!(name || email)} />
       </main>
       <Footer />
     </div>

@@ -55,7 +55,7 @@ function GateChip({
   );
 }
 
-export function CircuitSimulator({ email }: { email: string | null }) {
+export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
   const [ready, setReady] = useState(false);
   const [circuit, setCircuit] = useState<Circuit>(emptyCircuit);
   const [selectedGate, setSelectedGate] = useState<GateType>("H");
@@ -385,7 +385,7 @@ export function CircuitSimulator({ email }: { email: string | null }) {
             Run {shots} shots
           </button>
         </div>
-        {email && (
+        {signedIn && (
           <button
             onClick={() => {/* save circuit — stub for v1 */}}
             style={{
@@ -403,7 +403,7 @@ export function CircuitSimulator({ email }: { email: string | null }) {
             Save circuit
           </button>
         )}
-        {!email && (
+        {!signedIn && (
           <span style={{ fontSize: "0.78rem", color: "#9CA3AF" }}>
             <a href="/signin" style={{ color: ACCENT }}>Sign in</a> to save circuits.
           </span>
