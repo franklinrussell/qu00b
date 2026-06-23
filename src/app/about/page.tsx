@@ -32,8 +32,8 @@ export default async function AboutPage() {
         <div style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.9375rem", color: "#374151", lineHeight: 1.7, display: "flex", flexDirection: "column", gap: "1.5rem" }}>
 
           <p>
-            qu00b is a browser-based quantum circuit simulator. You drag gates
-            onto a wire grid, hit Run, and it shows you the resulting probability
+            qu00b is a browser-based quantum circuit simulator. You place gates
+            on a wire grid, hit Run, and it shows you the resulting probability
             distribution — no cloud, no install, no quantum hardware required.
             The whole thing runs in your browser tab.
           </p>
@@ -92,7 +92,7 @@ export default async function AboutPage() {
           </p>
 
           <h2 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.3rem", letterSpacing: "0.04em", color: "#111", marginBottom: 0 }}>
-            Three things to try (and why they&rsquo;re strange)
+            Four things to try (and why they&rsquo;re strange)
           </h2>
           <p>
             Open the simulator and hit{" "}
@@ -121,6 +121,15 @@ export default async function AboutPage() {
             1 for balanced, 0 for constant, guaranteed. It&rsquo;s tiny and a little contrived,
             but it&rsquo;s the smallest honest proof that asking a question in superposition can
             cost strictly fewer steps than asking it one input at a time.
+          </p>
+          <p>
+            <strong>Grover&rsquo;s search.</strong> Four items, one marked. A classical search
+            needs up to four lookups — two on average. Grover finds it in one. Load
+            Grover &mdash; 1 iter and the marked state climbs from 25% to 100% in a
+            single pass: not by eliminating the other options but by rotating their
+            amplitudes until destructive interference drives them to zero. Load step 2
+            and it overshoots — the probability rotates back to uniform. Grover is a
+            rotation, not a ratchet, and one step is exactly right for N=4.
           </p>
           <p>
             None of this is the computer being fast. It&rsquo;s the computer following different
