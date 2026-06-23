@@ -7,7 +7,7 @@ A browser-based quantum circuit simulator. The simulation runs 100% client-side:
 ---
 
 <!-- Screenshot: drop a screenshot or GIF at docs/demo.gif and uncomment.
-     Suggested shot: Bell pair (two bars at 50%) or Grover — 1 iter (|11⟩ bar at 100%).
+     Suggested shot: Bell pair (two bars at 50%) or Grover — 1 iter (|110000⟩ bar at 100%).
      The screenshot in this PR shows Grover — 2 iter (overshoot back to 25%×4).
 -->
 <!-- ![qu00b demo](docs/demo.gif) -->

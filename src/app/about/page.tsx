@@ -67,6 +67,13 @@ export default async function AboutPage() {
             </a>
             .
           </p>
+          <p style={{ color: "#6B7280", fontSize: "0.875rem" }}>
+            Display convention: qu00b labels basis states with q0 as the
+            leftmost bit — the same order as the wire grid, where q0 is the top
+            wire. Internally the state vector stores q0 at the least-significant
+            bit position; the display is reversed so labels read left-to-right
+            as q0 q1 q2 …
+          </p>
 
           <h2 style={{ fontFamily: "var(--font-bebas)", fontSize: "1.3rem", letterSpacing: "0.04em", color: "#111", marginBottom: 0 }}>
             The name

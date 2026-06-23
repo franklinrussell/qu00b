@@ -127,8 +127,8 @@ const EXAMPLES: Example[] = [
         { type: "H", target: 1, col: 6 },
       ] as Gate[],
     },
-    does: "One oracle + diffuser: interference amplifies the marked state |11⟩ and suppresses the rest.",
-    look: "The |11⟩ bar hits 100% — one step, perfect certainty. Compare with step 0: amplitude concentrated entirely by interference, not elimination. This is optimal for N=4.",
+    does: "One oracle + diffuser: interference amplifies the marked state |110000⟩ (q0 and q1 both 1) and suppresses the rest.",
+    look: "The |110000⟩ bar hits 100% — one step, perfect certainty. Compare with step 0: amplitude concentrated entirely by interference, not elimination. This is optimal for N=4.",
   },
   {
     id: "grover-2",

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ensureReady, run } from "@/lib/qsim";
+import { basisLabel } from "@/lib/format";
 import { SavedCircuits } from "./SavedCircuits";
 import { TryThis } from "./TryThis";
 import type { Gate, GateType, Circuit } from "@/types";
@@ -16,10 +17,6 @@ const DEFAULT_SHOTS = 512;
 
 function emptyCircuit(): Circuit {
   return { id: "local", name: "Untitled", qubits: N_QUBITS, gates: [] };
-}
-
-function basisLabel(index: number, n: number): string {
-  return "|" + index.toString(2).padStart(n, "0") + "⟩";
 }
 
 function GateChip({
@@ -514,6 +511,9 @@ export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
             }}
           >
             State probabilities
+          </div>
+          <div style={{ fontFamily: "var(--font-jakarta)", fontSize: "0.7rem", color: "#9CA3AF", marginBottom: "0.5rem", letterSpacing: "0.02em" }}>
+            Reading order: q0 first (q0 is the top wire)
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
             {Array.from({ length: size }, (_, i) => {
