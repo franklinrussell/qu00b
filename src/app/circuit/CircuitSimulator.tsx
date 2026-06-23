@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ensureReady, run } from "@/lib/qsim";
 import { SavedCircuits } from "./SavedCircuits";
+import { TryThis } from "./TryThis";
 import type { Gate, GateType, Circuit } from "@/types";
 
 const ACCENT = "#14B8A6";
@@ -214,6 +215,9 @@ export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
 
   return (
     <div style={{ fontFamily: "var(--font-jakarta)" }}>
+      {/* Try this — example presets, above the palette */}
+      <TryThis onLoad={handleLoad} currentGates={circuit.gates} />
+
       {/* Gate palette */}
       <div style={{ marginBottom: "1rem" }}>
         <div
