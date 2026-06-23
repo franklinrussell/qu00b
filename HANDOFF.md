@@ -10,6 +10,10 @@ Part of Birch Tree Studio's public-portfolio. Lives at qu00b.app.
 
 **GitHub OAuth instead of magic-link** — BTS default is Nodemailer/Resend magic-link. qu00b uses GitHub OAuth (`next-auth/providers/github`). The adapter implements `getUserByAccount` and `linkAccount` via a dedicated `accounts` onejsonfile collection keyed as `"github:providerAccountId"` → `userId`. GitHub username (`login`) is stored as `Qu00bUser.name`; avatar URL as `Qu00bUser.avatarUrl`. The `AuthMetaDoc` / `verificationTokens` collection is retained in the adapter interface but is never called by GitHub OAuth flow.
 
+Authorization scope is `"read:user user:email"`. GitHub users with private email return `profile.email = null` from the OAuth callback. `src/auth.ts` backfills by fetching `https://api.github.com/user/emails` and finding the primary verified address. The `signIn` callback runs the same backfill for returning users whose stored email is empty. Without this, sign-in appears to succeed but the user record has no email and the support form shows anon fields to a logged-in user.
+
+**Basis-state display convention** — `src/lib/format.ts::basisLabel(index, nQubits)` is the single source of truth for all ket label strings. The kernel stores q0 at bit 0 (LSB), so a plain binary string puts q0 on the right. `basisLabel` reverses the bit string so q0 appears leftmost — matching the wire grid where q0 is the top row. Both the State Probabilities chart and the Measurement Histogram import from this helper so their labels always agree. Do not inline label generation elsewhere.
+
 **Dual license** — MIT OR Apache-2.0 (standard open-source dual), not BTS-typical "all rights reserved." Recorded in LICENSE-MIT and LICENSE-APACHE.
 
 ---
@@ -50,7 +54,7 @@ interface Gate {
 }
 ```
 
-Stored in onejsonfile as `Record<"userId:circuitId", Circuit & { userId }>`.
+Stored in onejsonfile as `Record<"userId:circuitId", Circuit & { userId: string; updatedAt: string }>`. `updatedAt` is stamped on every PUT and used to sort the My circuits panel newest-first.
 
 ---
 
@@ -66,8 +70,6 @@ Six tokens required — set in `.env.local` and Vercel production:
 | `ONEJSONFILE_RATELIMIT_TOKEN` | `Record<hashedKey, count>` (unused by GitHub OAuth, kept for future use) |
 | `ONEJSONFILE_CIRCUITS_TOKEN` | `Record<userId:circuitId, Circuit>` |
 | `ONEJSONFILE_ACCOUNTS_TOKEN` | `Record<"github:providerAccountId", userId>` |
-
-**TODO:** Mint these tokens at onejsonfile.com and paste into `.env.local`, then push to Vercel.
 
 GitHub OAuth env vars also required:
 
