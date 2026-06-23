@@ -44,7 +44,7 @@ export function Footer() {
             color: "#9CA3AF",
           }}
         >
-          Meet your first qubit.
+          Both 0 and 1.
         </span>
       </Link>
 

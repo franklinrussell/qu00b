@@ -527,12 +527,14 @@ export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
                 >
                   <span
                     style={{
-                      width: "60px",
+                      width: "84px",
                       fontSize: "0.72rem",
                       color: "#374151",
                       fontWeight: 500,
                       flexShrink: 0,
                       textAlign: "right",
+                      fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
+                      fontVariantNumeric: "tabular-nums",
                     }}
                   >
                     {basisLabel(i, N_QUBITS)}
@@ -599,12 +601,14 @@ export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
                 >
                   <span
                     style={{
-                      width: "60px",
+                      width: "84px",
                       fontSize: "0.72rem",
                       color: "#374151",
                       fontWeight: 500,
                       flexShrink: 0,
                       textAlign: "right",
+                      fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
+                      fontVariantNumeric: "tabular-nums",
                     }}
                   >
                     {basisLabel(i, N_QUBITS)}
