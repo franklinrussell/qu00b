@@ -55,7 +55,7 @@ export default async function PrivacyPage() {
             Saved circuits
           </h2>
           <p>
-            If you sign in and save a circuit, it is stored in onejsonfile (a simple
+            If you sign in and save a circuit, it is stored in onejsonfile (a powerful
             JSON storage service) keyed to your account. You can delete saved circuits
             at any time from the simulator. You can also delete your account by
             contacting us via the support page.
