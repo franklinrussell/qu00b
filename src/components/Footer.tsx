@@ -30,27 +30,29 @@ export function Footer() {
           flexShrink: 0,
         }}
       >
-        <Link
-          href="/"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            textDecoration: "none",
-          }}
-        >
-          <Logo size={22} />
-          <span
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <Link
+            href="/"
             style={{
-              fontFamily: "var(--font-bebas)",
-              fontSize: "0.95rem",
-              letterSpacing: "0.04em",
-              color: "#111",
-              lineHeight: 1,
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              textDecoration: "none",
             }}
           >
-            <Wordmark />
-          </span>
+            <Logo size={22} />
+            <span
+              style={{
+                fontFamily: "var(--font-bebas)",
+                fontSize: "0.95rem",
+                letterSpacing: "0.04em",
+                color: "#111",
+                lineHeight: 1,
+              }}
+            >
+              <Wordmark />
+            </span>
+          </Link>
           <span
             className="footer-tagline"
             style={{
@@ -61,7 +63,33 @@ export function Footer() {
           >
             Both 0 and 1.
           </span>
-        </Link>
+          <span
+            className="footer-tagline"
+            style={{
+              fontFamily: "var(--font-jakarta)",
+              fontSize: "0.75rem",
+              color: "#9CA3AF",
+            }}
+          >
+            ·{" "}
+            <a
+              href="https://birchtreestudio.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontFamily: "var(--font-jakarta)",
+                fontSize: "0.75rem",
+                color: "#9CA3AF",
+                textDecoration: "none",
+                cursor: "pointer",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+              onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+            >
+              Birch Tree Studio
+            </a>
+          </span>
+        </div>
 
         <nav className="footer-nav" style={{ display: "flex", gap: "1.25rem", alignItems: "center" }}>
           {[
