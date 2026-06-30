@@ -5,6 +5,7 @@ import { ensureReady, run } from "@/lib/qsim";
 import { basisLabel } from "@/lib/format";
 import { SavedCircuits } from "./SavedCircuits";
 import { TryThis } from "./TryThis";
+import { LearnPanel } from "./LearnPanel";
 import type { Gate, GateType, Circuit } from "@/types";
 
 const ACCENT = "#14B8A6";
@@ -214,6 +215,9 @@ export function CircuitSimulator({ signedIn }: { signedIn: boolean }) {
     <div style={{ fontFamily: "var(--font-jakarta)" }}>
       {/* Try this — example presets, above the palette */}
       <TryThis onLoad={handleLoad} currentGates={circuit.gates} />
+
+      {/* Learn — variational circuit / QML demo */}
+      <LearnPanel />
 
       {/* Gate palette */}
       <div style={{ marginBottom: "1rem" }}>
